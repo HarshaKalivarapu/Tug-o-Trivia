@@ -488,6 +488,7 @@ void displayQues(class Questions *questionBank){
             circle.Close();
             d = 7;
             j = 0;
+            
 
             //get 34 characters of question string, display
             //accounts for the extra character thats used on line 1
