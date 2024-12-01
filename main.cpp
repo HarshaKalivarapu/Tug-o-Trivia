@@ -192,6 +192,7 @@ void mainMenu(class Stats *Player1, class Stats *Player2){
     LCD.WriteAt("Tug-o'-Trivia", 85, 30);
 
     //set up rectangles, add text
+    LCD.SetFontColor(WHITE);
     LCD.DrawRectangle(115, 60, 90, 25);
     LCD.WriteAt("Start", 130, 65);
 
