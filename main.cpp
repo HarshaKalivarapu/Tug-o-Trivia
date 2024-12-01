@@ -573,11 +573,13 @@ void moveTOW(string who, int correct, int *currentPosX, int *currentPosY) {
         //states who answered and that they were correct
         LCD.WriteAt(who, 110, 100);
         LCD.WriteAt("Answered Correctly!", 43, 130);
+        Sleep(1.0);
+        
         //draws an arrow pointing to tug of war character display (to tell them that it is changing)
         LCD.WriteAt("^", 153, 59);
         LCD.WriteAt("|", 153, 59);
         LCD.WriteAt("|", 153, 69);
-        Sleep(1.0);
+        Sleep(0.8);
 
         //this part moves the tug of war display five pixels towards player who got it right
         if (who == "Player 1") {
@@ -606,11 +608,13 @@ void moveTOW(string who, int correct, int *currentPosX, int *currentPosY) {
         //states who answered and that they were wrong
         LCD.WriteAt(who, 110, 100);
         LCD.WriteAt("Answered Incorrectly!", 43, 130);
+        Sleep(1.0);
+
         //draws an arrow pointing to tug of war character display (to tell them that it is changing)
         LCD.WriteAt("^", 153, 59);
         LCD.WriteAt("|", 153, 59);
         LCD.WriteAt("|", 153, 69);
-        Sleep(1.0);
+        Sleep(0.8);
 
         //this part moves the tug of war display five pixels towards player who got it wrong
         if (who == "Player 1") {
