@@ -12,15 +12,21 @@ void creditsMenu(class Stats *, class Stats *);
 void themeMenu(class Stats *, class Stats *);
 void instructionsMenu(class Stats *, class Stats *);
 void theme(int choice, FEHImage , FEHImage , FEHImage );
-void tugOfWarDisplay(int , int );
+void tugOfWarDisplay(int *, int *);
 void displayQues(class Questions *); 
 //this takes who answered first and if they answered correct/wrong, and calls the tugOfWarDisplay() method to move the character appropriately. This will repeatedly call the tugOfWarDisplay() for every pixel, so it looks like it is moving, until it moves the number of pixels it needs to
 //this must take the Player1 or Player2 object, so it can update cAnswers / wAnswers accordingly 
-//void moveTugOfWar(class Stats *, bool );
+void moveTOW(string , int , int *, int *);
 //this takes the coordinates of where the sprite of the characters should end up
+void analyzeAns(class Stats *, class Stats *, int , int *, int *);
+int doStatsStuff(class Stats *, class Stats *, int , float , int, int, int );
+void celebrateMenu(int *, int *, class Stats *, class Stats *);
 
-void checkAns(class Stats *, class Stats *, int );
-int doStatsStuff(class Stats *, class Stats *, int , float , int, int );
+
+
+
+//need to implement time limit for each question
+//need to set up the questions to where they keep coming until one person wins, so make variables to mark each end of the marker on ropes
 
 int choice = 3;
 
@@ -104,8 +110,9 @@ int main() {
     mainMenu(&Player1, &Player2);
 
     //creates and opens photos for use (backgrounds)
+    
     FEHImage feh;
-    feh.Open("FEH - SDP FEH Theme (1).png");
+    feh.Open("FEH - SDP FEH Theme.png");
     FEHImage geo;
     geo.Open("FEH - SDP Geo Theme.png");
     FEHImage osu;
@@ -127,10 +134,13 @@ int main() {
             //test.Draw(0, 0);
 
 */
-
     
+    //this is position
+    int currentPosX = 0;
+    int currentPosY = 0;
     while (1){
         theme(choice, feh, geo, osu);
+        tugOfWarDisplay(&currentPosX, &currentPosY);
 
         if (choice == 0){
             for (int i = 0; i < 6; i++){
@@ -147,14 +157,18 @@ int main() {
         }
 
         int correctNum;
-        for (int d = 0; d < 6; d++){
+        //d is the number of times the program should ask questions (change this later)
+        while (currentPosX < 30 && currentPosX > -30) {
             correctNum = questionBank[0].correctIndex;
             displayQues(questionBank);
-            checkAns(&Player1, &Player2, correctNum);
+            analyzeAns(&Player1, &Player2, correctNum, &currentPosX, &currentPosY);
             LCD.Clear();
             theme(choice, feh, geo, osu);
+            tugOfWarDisplay(&currentPosX, &currentPosY);
         }
-        statsMenu(&Player1, &Player2);
+
+
+        celebrateMenu(&currentPosX, &currentPosY, &Player1, &Player2);
     }
     return 0;
 }
@@ -175,7 +189,7 @@ void mainMenu(class Stats *Player1, class Stats *Player2){
 
     //title
     LCD.SetFontColor(BLACK);
-    LCD.WriteAt("Tug-o'-Triva", 85, 30);
+    LCD.WriteAt("Tug-o'-Trivia", 85, 30);
 
     //set up rectangles, add text
     LCD.DrawRectangle(115, 60, 90, 25);
@@ -229,7 +243,7 @@ void themeMenu(class Stats *Player1, class Stats *Player2){
     //title
     LCD.SetFontColor(BLACK);
 
-    LCD.WriteAt("Tug-o'-Triva", 85, 30);
+    LCD.WriteAt("Tug-o'-Trivia", 85, 30);
     smallFont.display("Choose Your Theme", 0xffffff, 110, 50);
 
     //set up rectangles, add text
@@ -283,7 +297,7 @@ void creditsMenu(class Stats *Player1, class Stats *Player2){
     LCD.Clear();
 
     //actual credits
-    LCD.WriteAt("Tug-o'-Triva", 85, 30);
+    LCD.WriteAt("Tug-o'-Trivia", 85, 30);
     LCD.WriteAt("Coded by:", 70, 70);
     LCD.WriteAt("Harsha Kalivarapu", 70, 90);
     LCD.WriteAt("Clayton Oldham", 70, 110);
@@ -316,7 +330,7 @@ void instructionsMenu(class Stats *Player1, class Stats *Player2){
     LCD.Clear();
 
     //title
-    LCD.WriteAt("Tug-o'-Triva", 85, 30);
+    LCD.WriteAt("Tug-o'-Trivia", 85, 30);
 
     //instructions
     class Text smallFont;
@@ -367,7 +381,7 @@ void statsMenu(class Stats *Player1, class Stats *Player2){
     LCD.Clear();
 
     //title
-    LCD.WriteAt("Tug-o'-Triva", 85, 30);
+    LCD.WriteAt("Tug-o'-Trivia", 85, 30);
 
     //player 1 stats
     LCD.WriteAt("Player 1:", 0, 50);
@@ -410,6 +424,7 @@ void statsMenu(class Stats *Player1, class Stats *Player2){
 
 void theme(int choice, FEHImage feh, FEHImage geo, FEHImage osu) {
     if (choice == 0) {
+
         feh.Draw(0, 0);
     }
     else if (choice == 1) {
@@ -420,10 +435,74 @@ void theme(int choice, FEHImage feh, FEHImage geo, FEHImage osu) {
     }
 }
 
-void tugOfWarDisplay(int xCoor, int yCoor, FEHImage towDisplay) {
-    towDisplay.Draw(xCoor, yCoor);
+//this makes screen green/red, and displays who answered first and correctly/wrongly, and moves tug of war with animation
+void moveTOW(string who, int correct, int *currentPosX, int *currentPosY) {
+    LCD.Clear();
+    //this clears the screen and makes it red/green, and shows which player and if they answered correct/wrong. It maintains the tug of war display as well.
+    if (correct == 1) {
+        LCD.SetBackgroundColor(GREEN);
+        LCD.Clear();
+
+        tugOfWarDisplay(currentPosX, currentPosY);
+
+        LCD.WriteAt(who, 110, 90);
+        LCD.WriteAt("Answered Correctly!", 43, 130);
+        Sleep(1.0);
+        //this part moves the tug of war display as many pixels as needed. We will move five pixels for whoever gets right/wrong
+        if (who == "Player 1") {
+            for (int i = 0; i < 5; i++) {
+                (*currentPosX)--;
+                tugOfWarDisplay(currentPosX, currentPosY);
+                Sleep(0.15);
+            }
+        }
+        else {
+            for (int i = 0; i < 5; i++) {
+                (*currentPosX)++;
+                tugOfWarDisplay(currentPosX, currentPosY);
+                Sleep(0.15);
+            }
+        }
+    }
+    else {
+        LCD.SetBackgroundColor(RED);
+        LCD.Clear();
+
+        tugOfWarDisplay(currentPosX, currentPosY);
+
+        LCD.WriteAt(who, 110, 90);
+        LCD.WriteAt("Answered Incorrectly!", 43, 130);
+        Sleep(1.5);
+        //this part moves the tug of war display as many pixels as needed. We will move five pixels for whoever gets right/wrong
+        if (who == "Player 1") {
+            for (int i = 0; i < 5; i++) {
+                (*currentPosX)++;
+                tugOfWarDisplay(currentPosX, currentPosY);
+                Sleep(0.15);
+            }
+        }
+        else {
+            for (int i = 0; i < 5; i++) {
+                (*currentPosX)--;
+                tugOfWarDisplay(currentPosX, currentPosY);
+                Sleep(0.15);
+            }
+        }
+    }
 }
 
+//this displays the tug of war characters at given coordinates
+void tugOfWarDisplay(int *xCoor, int *yCoor) {
+    FEHImage towBox;
+    towBox.Open("TOW Box.png");
+    towBox.Draw(0, 0);
+
+    FEHImage towChar;
+    towChar.Open("TOW Characters.png");
+    towChar.Draw(*xCoor, *yCoor);
+}
+
+//this displays question, buttons, and moves question to back of array
 void displayQues(class Questions *questionBank){
     class Text smallFont;
 
@@ -488,7 +567,7 @@ void displayQues(class Questions *questionBank){
             circle.Close();
             d = 7;
             j = 0;
-            
+
 
             //get 34 characters of question string, display
             //accounts for the extra character thats used on line 1
@@ -624,6 +703,9 @@ void displayQues(class Questions *questionBank){
     }
 
     //display answer buttons
+    FEHImage buttons;
+    buttons.Open("Buttons Display.png");
+    buttons.Draw(0, 0);
 
 
     //move question to back of array
@@ -637,12 +719,16 @@ void displayQues(class Questions *questionBank){
     questionBank[5] = temp;
 }
 
-void checkAns(class Stats *Player1, class Stats *Player2, int correctNum){
+//this checks and records for when user hits a button, sends it to doStatsStuff, then calls moveTOW to move tug of war display correctly
+void analyzeAns(class Stats *Player1, class Stats *Player2, int correctNum, int *currentPosX, int *currentPosY){
     int x, y;
     class Text smallFont;
     float timeAns, time;
-    //will be 1 for correct, 0 for incorrect
+    //option the user selected
+    int option;
+    //this will record if the option user put is correct/wrong with 1/0;
     int correct;
+    //records who answered first
     string who;
     //allow for click to finish registering, has stroke otherwise
     Sleep(0.1);
@@ -650,41 +736,53 @@ void checkAns(class Stats *Player1, class Stats *Player2, int correctNum){
     //check for touch
     while(!LCD.Touch(&x,&y)){}
     time = TimeNow() - timeAns;
-     if (x >= 0 && x <= 50 && y >= 60 && y <= 100){
+    if (x >= 0 && x <= 40){
         //Player 1 button 1
         who = "Player 1";
-       correct = doStatsStuff(Player1, Player2, 1, time, correctNum, correct);
-        //add 3 more
-
-     } else if (x >= 280 && x <= 320 && y >= 60 && y <= 100) { 
+        if (y >= 60 && y <= 100) {
+            option = 0;
+        }
+        else if (y >= 101 && y <= 140) {
+            option = 1;
+        }
+        else if (y >= 141 && y <= 180) {
+            option = 2;
+        }
+        else if (y >= 181 && y <= 220) {
+            option = 3;
+        }
+        correct = doStatsStuff(Player1, Player2, 1, time, correctNum, option, correct);
+    } else if (x >= 279 && x <= 319) { 
         //player 2 buttons
         who = "Player 2";
-       correct = doStatsStuff(Player1, Player2, 2, time, correctNum, correct);
-        //add 3
-     } else {
-        //if not touching button call this function again so misclicks can happen
-        checkAns(Player1, Player2, correctNum);
-     }
-
-    //if correct, screen green, else screen red
-    if (correct == 1){
-        LCD.SetFontColor(GREEN);
-        LCD.FillRectangle(0, 69, 320, 171);
-        smallFont.display(who + " Answered Correctly", 0xffffff, 80, 100);
+        if (y >= 60 && y <= 100) {
+            option = 0;
+        }
+        else if (y >= 101 && y <= 140) {
+            option = 1;
+        }
+        else if (y >= 141 && y <= 180) {
+            option = 2;
+        }
+        else if (y >= 181 && y <= 220) {
+            option = 3;
+        }
+        correct = doStatsStuff(Player1, Player2, 2, time, correctNum, option, correct);
     } else {
-        LCD.SetFontColor(RED);
-        LCD.FillRectangle(0, 69, 320, 171);
-        smallFont.display(who + " Answered Incorrectly", 0xffffff, 70, 100);
+        //if not touching button call this function again so misclicks can happen
+        analyzeAns(Player1, Player2, correctNum, currentPosX, currentPosY);
     }
-    Sleep(1.5);
-
+    LCD.WriteAt(who, 50, 90);
+    //calls moveTOW to move tug of war display correctly
+    moveTOW(who, correct, currentPosX, currentPosY);
 }
 
-int doStatsStuff(class Stats *Player1, class Stats *Player2, int player, float time, int correctNum, int correct){
+//this checks if the option was correct/wrong, and updates stats, returns whether or not it was correct
+int doStatsStuff(class Stats *Player1, class Stats *Player2, int player, float time, int correctNum, int option, int correct){
     float temp, timeAvg, howMuch;
     if (player == 1){
         //check wether correct or not
-        if(correctNum == 0){
+        if(correctNum == option){
             correct = 1;
             Player1->cAnswers += 1;
             
@@ -701,7 +799,7 @@ int doStatsStuff(class Stats *Player1, class Stats *Player2, int player, float t
         Player1->totTime += time;
     } else {
         //check whether correct or not
-        if(correctNum == 0){
+        if(correctNum == option){
             correct = 1;
             Player2->cAnswers += 1;
             
@@ -718,4 +816,61 @@ int doStatsStuff(class Stats *Player1, class Stats *Player2, int player, float t
         Player2->totTime += time;
     }
     return correct;
+}
+
+void celebrateMenu(int *currentPosX, int *currentPosY, class Stats *Player1, class Stats *Player2) {
+    int x, y;
+    LCD.Clear();
+    FEHImage starBack;
+    starBack.Open("Star Background.png");
+    starBack.Draw(0, 0);
+
+    FEHImage towBox;
+    towBox.Open("TOW Box.png");
+    towBox.Draw(0, 60);
+
+    FEHImage towChar;
+    towChar.Open("TOW Characters.png");
+    towChar.Draw(*currentPosX, (*currentPosY) + 60);
+
+    for (int i = 0; i < 4; i++) {
+        LCD.SetFontColor(WHITE);
+
+        if ((*currentPosX) == 30) {
+            LCD.WriteAt("Player 2 Won!", 86, 140);
+        }
+        else {
+            LCD.WriteAt("Player 1 Won!", 86, 140);
+        }
+
+        Sleep(0.4);
+
+        LCD.SetFontColor(BLACK);
+        LCD.FillRectangle(80, 130, 180, 30);
+
+        Sleep(0.4);
+    }
+
+    LCD.SetFontColor(WHITE);
+    if ((*currentPosX) == 30) {
+            LCD.WriteAt("Player 2 Won!", 86, 140);
+        }
+        else {
+            LCD.WriteAt("Player 1 Won!", 86, 140);
+        }
+
+    LCD.SetFontColor(WHITE);
+    LCD.DrawRectangle(115, 190, 90, 25);
+    LCD.WriteAt("Menu", 135, 195);
+
+    while(!LCD.Touch(&x,&y)){}
+
+    if (x >= 115 && x <= 205 && y >= 190 && y <= 215) {
+        //back to main menu
+        mainMenu(Player1, Player2);
+    }
+    else {
+        celebrateMenu(currentPosX, currentPosY, Player1, Player2);
+    }
+
 }
