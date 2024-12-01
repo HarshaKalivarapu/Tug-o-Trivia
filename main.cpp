@@ -6,30 +6,25 @@
 #include <math.h>
 using namespace std;
 
+//prototypes for all methods. Explanation of all methods are above the method header
 void mainMenu(class Stats *, class Stats *);
 void statsMenu(class Stats *, class Stats *);
 void creditsMenu(class Stats *, class Stats *);
 void themeMenu(class Stats *, class Stats *);
 void instructionsMenu(class Stats *, class Stats *);
-void theme(int choice, FEHImage , FEHImage , FEHImage );
+void theme(FEHImage , FEHImage , FEHImage );
 void tugOfWarDisplay(int *, int *);
 void displayQues(class Questions *); 
-//this takes who answered first and if they answered correct/wrong, and calls the tugOfWarDisplay() method to move the character appropriately. This will repeatedly call the tugOfWarDisplay() for every pixel, so it looks like it is moving, until it moves the number of pixels it needs to
-//this must take the Player1 or Player2 object, so it can update cAnswers / wAnswers accordingly 
 void moveTOW(string , int , int *, int *);
-//this takes the coordinates of where the sprite of the characters should end up
 void analyzeAns(class Stats *, class Stats *, int , int *, int *);
 int doStatsStuff(class Stats *, class Stats *, int , float , int, int, int );
 void celebrateMenu(int *, int *, class Stats *, class Stats *);
+void countdownMenu(int *, int *, FEHImage , FEHImage , FEHImage );
 
-
-
-
-//need to implement time limit for each question
-//need to set up the questions to where they keep coming until one person wins, so make variables to mark each end of the marker on ropes
-
+//created global variable to keep track of what theme the user selects
 int choice = 3;
 
+//template for Questions class. An instance of this class represents one question
 class Questions{
     public:
     string question;
@@ -37,6 +32,8 @@ class Questions{
     string a2;
     string a3;
     string a4;
+    //this number is the index of the option that is correct, where index 0 represents the FIRST OPTION
+    //ex: if correctIndex = 2, then the third answer option is correct
     int correctIndex;
     
     //constructor
@@ -50,6 +47,7 @@ class Questions{
     }
 };
 
+//template for Stats class. An instance of this class represents the stats for one player
 class Stats{
     public:
     int cAnswers;
@@ -69,17 +67,77 @@ class Stats{
 };
 
 int main() {
-    // Clear background
+    //Sets background to black / clears screen
     LCD.SetBackgroundColor(BLACK);
     LCD.Clear();
+
+    //initializes questionBank array. Will hold the questions that relate to theme selected by user
     Questions questionBank[6];
 
-    //initalize stats
+    /*creates instance of Stats class called Player1. Represents stats for Player 1
+    *   
+    *   public :
+    *       int cAnswers;
+    *       int wAnswers;
+    *       float avgTime;
+    *       float howMany;
+    *       float totTime;
+    * 
+    *       Stats() {
+    *           cAnswers = 0;
+    *           wAnswers = 0;
+    *           avgTime = 0;
+    *           howMany = 0;
+    *           totTime = 0;
+    *       }      
+    */
     class Stats Player1;
+
+    /*creates instance of Stats class called Player2. Represents stats for Player 2
+    *   
+    *   public :
+    *       int cAnswers;
+    *       int wAnswers;
+    *       float avgTime;
+    *       float howMany;
+    *       float totTime;
+    * 
+    *       Stats() {
+    *           cAnswers = 0;
+    *           wAnswers = 0;
+    *           avgTime = 0;
+    *           howMany = 0;
+    *           totTime = 0;
+    *       }      
+    */
     class Stats Player2;
 
-    //question bank FEH
-    //index starts at 0, so correct answer 3 is index 2
+    
+    
+    /*each question is an instance of Questions class and are given names (like fehQX, geoQX, osuQX).
+    * Each instance represents a question in each theme. 
+    * NOTE: Only listing private/public attributes once for simplicity; this applies to all questions created
+    *   
+    *       public:
+    *           string question;
+    *           string a1;
+    *           string a2;
+    *           string a3;
+    *           string a4;
+    *           //this number is the index of the option that is correct, where index 0 represents the FIRST OPTION
+    *           //ex: if correctIndex = 2, then the third answer option is correct
+    *           int correctIndex;
+    *
+    *       Questions(string ques = "Question 1", string ans1 = "Ans 1", string ans2 = "Ans 2", string ans3 = "Ans 3", string ans4 = "Ans 4", int correct = 0){
+    *           question = ques;
+    *           a1 = ans1;
+    *           a2 = ans2;
+    *           a3 = ans3;
+    *           a4 = ans4;
+    *           correctIndex = correct;
+    *       }    
+    */
+    //Questions for FEH Theme. Questions are stored in fehQuestions array of Questions type
     class Questions fehQ1("What is the first index of an array?", "1", "2", "0", "i", 2);
     class Questions fehQ2("What is Paul Clingans middle name?", "Arthur", "Andrew", "Anthony", "Alan", 3);
     class Questions fehQ3("What is the standard output in C++?", "stdout", "stdin", "out", "sout", 0);
@@ -88,7 +146,7 @@ int main() {
     class Questions fehQ6("What is the name of the simulator used in FEH?", "Proteus", "Prometheus", "Apollo", "Chronos", 0);
     Questions fehQuestions[6] = {fehQ1, fehQ2, fehQ3, fehQ4, fehQ5, fehQ6};
 
-    //question bank Geography
+    //Questions for Geograph Theme. Questions are stored in geoQuestions array of Questions type
     class Questions geoQ1("What is the only country that starts with an O?", "Oman", "Omaha", "Okayama", "Oslo", 0);
     class Questions geoQ2("What river is the longest in the world?", "The Amazon River", "The Mississippi River", "The Ob River", "The Nile River", 3);
     class Questions geoQ3("Which country has the longest coastline?", "Chile", "Canada", "Japan", "Russia", 1);
@@ -97,51 +155,36 @@ int main() {
     class Questions geoQ6("What do you call a piece of land that is surrounded by water on two sides?", "Peninsula", "Isthmus", "Cape", "Cove", 2);
     Questions geoQuestions[6] = {geoQ1, geoQ2, geoQ3, geoQ4, geoQ5, geoQ6};
 
-    //question bank OSU
+    //Questions for OSU Theme. Questions are stored in osuQuestions array of Questions type
     class Questions osuQ1("What year was OSU founded?", "1864", "1892", "1902", "1870", 3);
     class Questions osuQ2("Who was the two-time Heisman trophy winner at Ohio State?", "Archie Griffin", "Woody Hayes", "Will Howard", "David Boston", 0);
     class Questions osuQ3("How many majors does OSU offer?", "Less than 100", "175-200", "More than 200", "100-150", 2);
     class Questions osuQ4("What is the nickname for the Ohio State football stadium?", "The Big House", "The Horseshoe", "The Woodshed", "The Flats", 1);
     class Questions osuQ5("What is the name of the OSU student-run newspaper?", "The Lantern", "The Chronicle", "Perspective", "Prospective", 0);
     class Questions osuQ6("What is the building that has a garden on top?", "Hitckcock Hall", "Orton Hall", "Knowlton Hall", "Hamilton Hall", 2);
-    Questions osuQuestions[6] = {osuQ1, osuQ1, osuQ3, osuQ4, osuQ5, osuQ6};
+    Questions osuQuestions[6] = {osuQ1, osuQ2, osuQ3, osuQ4, osuQ5, osuQ6};
     
 
+    //calls mainMenu method to begin the game
     mainMenu(&Player1, &Player2);
 
-    //creates and opens photos for use (backgrounds)
-    
+    //creates and opens backgrounds for all three themes
     FEHImage feh;
     feh.Open("FEH - SDP FEH Theme.png");
     FEHImage geo;
     geo.Open("FEH - SDP Geo Theme.png");
     FEHImage osu;
     osu.Open("FEH - SDP OSU Theme.png");
-
-
-/* This was all testing for sprites and images. Remember to also get better backgrounds by using AI to generate these sprites. Can also create a game backgorund for the game
-    FEHImage test;
-        test.Open("New Piskel (6).png");
-        LCD.SetBackgroundColor(WHITE);
-        LCD.Clear();
-        test.Draw(0, 0);
-        
-        FEHImage test2;
-        test2.Open("New Piskel (7).png");
-        test2.Draw(0, 0);
-
-            LCD.WriteAt("Tug-o'-Triva", 85, 30);
-            //test.Draw(0, 0);
-
-*/
     
-    //this is position
-    int currentPosX = 0;
-    int currentPosY = 0;
+    
+    //rest of the game occurs here
     while (1){
-        theme(choice, feh, geo, osu);
-        tugOfWarDisplay(&currentPosX, &currentPosY);
+        //this is x and y coordinates of tug of war characters initialized to 0
+        int currentPosX = 0;
+        int currentPosY = 0;
 
+        //after user selects theme choice (occurs when mainMenu method was called), questionBank is 
+        //given the questions for that theme
         if (choice == 0){
             for (int i = 0; i < 6; i++){
                 questionBank[i] = fehQuestions[i];
@@ -156,23 +199,38 @@ int main() {
             }
         }
 
+        //declares variable to store correct option for the question that is displayed
         int correctNum;
-        //d is the number of times the program should ask questions (change this later)
+        //while loop allows game to run until one of the tug of war players pull the opponent 
+        //close enough to the center (this is marked by markers/dots on the rope)
         while (currentPosX < 30 && currentPosX > -30) {
+            //calls countdownMenu to let players know quesiton is about to appear
+            countdownMenu(&currentPosX, &currentPosY, feh, geo, osu);
+            //sets correctNum to correctIndex of the question being displayed on screen
             correctNum = questionBank[0].correctIndex;
+            //displays question, answer choices, and buttons to select an answer
             displayQues(questionBank);
+            //waits for player 1 or 2 to answer, and analyzes answer (explained above the method header)
             analyzeAns(&Player1, &Player2, correctNum, &currentPosX, &currentPosY);
+            //clears screen and redisplays theme and tug of war display
             LCD.Clear();
-            theme(choice, feh, geo, osu);
+            theme(feh, geo, osu);
             tugOfWarDisplay(&currentPosX, &currentPosY);
         }
-
-
+        //once a player wins (pulls opponent close enough to center), calls celebration menu
         celebrateMenu(&currentPosX, &currentPosY, &Player1, &Player2);
     }
     return 0;
 }
 
+/*
+*(Clayton created) This method sets up the main menu page for the user to toggle / continue into the game
+*
+*   param : class Stats *Player1
+*       This input holds the address of the Player1 object (sent from main menu)
+*   param : class Stats *Player2
+*       This input holds the address of the Player2 object (sent from main menu)
+*/
 void mainMenu(class Stats *Player1, class Stats *Player2){
     //variables for touch
     int x, y;
@@ -181,17 +239,17 @@ void mainMenu(class Stats *Player1, class Stats *Player2){
     LCD.SetBackgroundColor(BLACK);
     LCD.Clear();
 
-    //added this and changed font color to black
+    //displays the game's general background
     FEHImage back;
     back.Open("FEH - SDP Background Image (1).png");
     back.Draw(0, 0);
     back.Close();
 
-    //title
+    //writes title
     LCD.SetFontColor(BLACK);
     LCD.WriteAt("Tug-o'-Trivia", 85, 30);
 
-    //set up rectangles, add text
+    //set up button options for user (Start, Stats, Credits, Instructions)
     LCD.SetFontColor(WHITE);
     LCD.DrawRectangle(115, 60, 90, 25);
     LCD.WriteAt("Start", 130, 65);
@@ -205,10 +263,10 @@ void mainMenu(class Stats *Player1, class Stats *Player2){
     LCD.DrawRectangle(85, 150, 150, 25);
     LCD.WriteAt("Instructions", 86, 155);
 
-    //wait for touch
+    //wait for user to click a button
     while(!LCD.Touch(&x,&y)){}
 
-    //buttons!
+    //takes user touch input and sends them to respective menu
     if (x >= 115 && x <= 205 && y >= 60 && y <= 85){
         LCD.Clear();
         themeMenu(Player1, Player2);
@@ -227,27 +285,39 @@ void mainMenu(class Stats *Player1, class Stats *Player2){
     }
 }
 
+/*
+*(Clayton created) Sets up the theme menu page when the user clicks "Theme" in the
+* main menu. Allows user to select theme / level and type of questions
+*
+*   param : class Stats *Player1
+*       This input holds the address of the Player1 object (sent from main menu)
+*   param : class Stats *Player2
+*       This input holds the address of the Player2 object (sent from main menu)
+*/
 void themeMenu(class Stats *Player1, class Stats *Player2){
     //variables for touch
     int x, y;
+
+    //creates instance of Text header file to write smaller font 
+    //(credits to Junhao Lin for small font library)
     class Text smallFont;
+
     //clear screen
     LCD.SetBackgroundColor(BLACK);
     LCD.Clear();
 
-    //added this and changed font color to black
+    //displays the game's general background
     FEHImage back;
     back.Open("FEH - SDP Background Image (1).png");
     back.Draw(0, 0);
     back.Close();
 
-    //title
+    //writes title
     LCD.SetFontColor(BLACK);
-
     LCD.WriteAt("Tug-o'-Trivia", 85, 30);
     smallFont.display("Choose Your Theme", 0xffffff, 110, 50);
 
-    //set up rectangles, add text
+    //set up button options for user (FEH, Geography, OSU)
     LCD.DrawRectangle(20, 90, 90, 25);
     LCD.WriteAt("FEH", 45, 95);
 
@@ -261,11 +331,10 @@ void themeMenu(class Stats *Player1, class Stats *Player2){
     LCD.WriteAt("Menu", 135, 180);
 
     
-
-    //wait for touch
+    //wait for user to select a button
     while(!LCD.Touch(&x,&y)){}
 
-    //check if buttons pressed
+    //takes user touch input and sets theme of the game
     //FEH theme
     if (x >= 20 && x <= 110 && y >= 90 && y <= 115){
         LCD.Clear();
@@ -288,41 +357,60 @@ void themeMenu(class Stats *Player1, class Stats *Player2){
 
 }
 
+/*
+*(Clayton created) Sets up the credits menu page when the user clicks "Credits" in the
+* main menu. Allows user to see who created / helped to create the program
+*
+*   param : class Stats *Player1
+*       This input holds the address of the Player1 object (sent from main menu)
+*   param : class Stats *Player2
+*       This input holds the address of the Player2 object (sent from main menu)
+*/
 void creditsMenu(class Stats *Player1, class Stats *Player2){
     //variables for touch
     int x, y;
+
+    //creates instance of Text file to write smaller font 
     class Text smallFont;
 
-    //clear page
+    //clears page
     LCD.SetBackgroundColor(BLACK);
     LCD.Clear();
 
-    //actual credits
+    //lists credits
     LCD.WriteAt("Tug-o'-Trivia", 85, 30);
     LCD.WriteAt("Coded by:", 70, 70);
     LCD.WriteAt("Harsha Kalivarapu", 70, 90);
     LCD.WriteAt("Clayton Oldham", 70, 110);
     smallFont.display("Small Font library provided by Junhao Liu.11305", 0xffffff, 25, 135);
 
-    //menu button
+    //set up button options for user (Menu)
     LCD.DrawRectangle(115, 175, 90, 25);
     LCD.WriteAt("Menu", 135, 180);
 
-    //wait for touch
+    //wait for user to select a button
     while(!LCD.Touch(&x,&y)){}
 
-    //check if touching button
+    //takes user touch input and sends them to respective menu
     if (x >= 115 && x <= 205 && y >= 180 && y <= 200){
         //back to main menu
         mainMenu(Player1, Player2);
     } else {
-        //if not touching button call this function again so misclicks can happen
+        //this calls function again to ensure player can misclick and not break game
         creditsMenu(Player1, Player2);
     }
 }
 
+/*
+*(Harsha created) Sets up the instructions menu page when the user clicks "Instructions" in the
+* main menu. Allows user to view steps to play the game
+*
+*   param : class Stats *Player1
+*       This input holds the address of the Player1 object (sent from main menu)
+*   param : class Stats *Player2
+*       This input holds the address of the Player2 object (sent from main menu)
+*/
 void instructionsMenu(class Stats *Player1, class Stats *Player2){
-
     //variables for touch
     int x, y;
 
@@ -330,10 +418,10 @@ void instructionsMenu(class Stats *Player1, class Stats *Player2){
     LCD.SetBackgroundColor(BLACK);
     LCD.Clear();
 
-    //title
+    //writes title
     LCD.WriteAt("Tug-o'-Trivia", 85, 30);
 
-    //instructions
+    //lists instructions for the game by creating instance of Text class for small font
     class Text smallFont;
     smallFont.display("This is a two player-game. Each player will be ", 0xffffff, 0, 50);
     smallFont.display("assigned as Player 1 (P1) or Player 2 (P2). Each ", 0xffffff, 0, 59);
@@ -353,25 +441,34 @@ void instructionsMenu(class Stats *Player1, class Stats *Player2){
     smallFont.display("", 0xffffff, 0, 185);
     smallFont.display("Double click on the screen to interact with buttons.", 0xffffff, 0, 194);
 
-    //menu button
+    //set up button options for user (Menu)
     LCD.DrawRectangle(115, 210, 90, 25);
     LCD.WriteAt("Menu", 135, 215);
 
-    //waiting for touch
+    //wait for user to select a button
     while(!LCD.Touch(&x,&y)){}
 
-    //check if touching button
+    //takes user touch input and sends them to respective menu
     if (x >= 115 && x <= 205 && y >= 210 && y <= 235){
         //back to main menu
         mainMenu(Player1, Player2);
     } else {
-        //if not touching button call this function again so misclicks can happen
+        //this calls function again to ensure player can misclick and not break game
         instructionsMenu(Player1, Player2);
     }
 }
 
+/*
+*(Clayton created) Sets up the stats menu page when the user clicks "Stats" in the
+* main menu. Allows user to view statistics of Player 1 and 2
+*
+*   param : class Stats *Player1
+*       This input holds the address of the Player1 object (sent from main menu)
+*   param : class Stats *Player2
+*       This input holds the address of the Player2 object (sent from main menu)
+*/
 void statsMenu(class Stats *Player1, class Stats *Player2){
-    //declare small font
+    //creates instance of Text header file to write smaller font 
     class Text smallFont;
     
     //variables for touch
@@ -381,10 +478,10 @@ void statsMenu(class Stats *Player1, class Stats *Player2){
     LCD.SetBackgroundColor(BLACK);
     LCD.Clear();
 
-    //title
+    //writes title
     LCD.WriteAt("Tug-o'-Trivia", 85, 30);
 
-    //player 1 stats
+    //lists player 1's stats
     LCD.WriteAt("Player 1:", 0, 50);
     smallFont.display("Correct Answer:", 0xffffff, 2, 73);
     LCD.WriteAt(Player1->cAnswers, 93, 70);
@@ -395,7 +492,7 @@ void statsMenu(class Stats *Player1, class Stats *Player2){
     smallFont.display("Average Time:", 0xffffff, 2, 113);
     LCD.WriteAt(Player1->avgTime, 93, 110);
 
-    //player 2 stats
+    //lists player 2's stats
     LCD.WriteAt("Player 2:", 166, 50);
     smallFont.display("Correct Answer:", 0xffffff, 168, 73);
     LCD.WriteAt(Player2->cAnswers, 259, 70);
@@ -406,26 +503,37 @@ void statsMenu(class Stats *Player1, class Stats *Player2){
     smallFont.display("Average Time:", 0xffffff, 168, 113);
     LCD.WriteAt(Player2->avgTime, 259, 110);
 
-    //menu button
+    //set up button options for user (Menu)
     LCD.DrawRectangle(115, 175, 90, 25);
     LCD.WriteAt("Menu", 135, 180);
 
-    //waiting for touch
+    //wait for user to select a button
     while(!LCD.Touch(&x,&y)){}
 
-    //check if touching button
+    //takes user touch input and sends them to respective menu
     if (x >= 115 && x <= 205 && y >= 175 && y <= 200){
         //back to main menu
         mainMenu(Player1, Player2);
     } else {
-        //if not touching button call this function again so misclicks can happen
+        //this calls function again to ensure player can misclick and not break game
         statsMenu(Player1, Player2);
     }
 }
 
-void theme(int choice, FEHImage feh, FEHImage geo, FEHImage osu) {
+/*
+*(Harsha created) Sets game background to the theme selected by the user
+*
+*   param : FEHImage feh
+*       This input holds object that contains background for feh theme
+*   param : FEHImage geo
+*       This input holds object that contains background for geography theme
+*   param : FEHImage osu
+*       This input holds object that contains background for osu theme
+*/
+void theme(FEHImage feh, FEHImage geo, FEHImage osu) {
+    //uses global variable choice (which was set to user's theme of choice), and displays the 
+    //background for that theme
     if (choice == 0) {
-
         feh.Draw(0, 0);
     }
     else if (choice == 1) {
@@ -436,20 +544,42 @@ void theme(int choice, FEHImage feh, FEHImage geo, FEHImage osu) {
     }
 }
 
-//this makes screen green/red, and displays who answered first and correctly/wrongly, and moves tug of war with animation
+/*
+*(Harsha created) Displays who answered first AND if they are correct or wrong. Makes entire screen 
+*green/red (based on correct or wrong answer) while maintaining tug of war display. Moves Tug of War 
+* display with animation
+*
+*   param : string who
+*       This input holds the player that answered first (comes from analyzeAns)
+*   param : int correct
+*       This input holds whether or not player answered correct (1) or wrong (0) (comes from analyzeAns)
+*   param : int *currentPosX
+*       This input holds the address of current X position of the tug of war character display
+*   param : int *currentPosY
+*       This input holds the address of current Y position of the tug of war character display
+*/
 void moveTOW(string who, int correct, int *currentPosX, int *currentPosY) {
     LCD.Clear();
-    //this clears the screen and makes it red/green, and shows which player and if they answered correct/wrong. It maintains the tug of war display as well.
+
+    //if player was correct, sets background to green, states who answered correctly, and moves tug of war characters five pixels in the player's direction
     if (correct == 1) {
+        //sets background to green
         LCD.SetBackgroundColor(GREEN);
         LCD.Clear();
 
+        //displays tug of war characters
         tugOfWarDisplay(currentPosX, currentPosY);
 
-        LCD.WriteAt(who, 110, 90);
+        //states who answered and that they were correct
+        LCD.WriteAt(who, 110, 100);
         LCD.WriteAt("Answered Correctly!", 43, 130);
+        //draws an arrow pointing to tug of war character display (to tell them that it is changing)
+        LCD.WriteAt("^", 153, 59);
+        LCD.WriteAt("|", 153, 59);
+        LCD.WriteAt("|", 153, 69);
         Sleep(1.0);
-        //this part moves the tug of war display as many pixels as needed. We will move five pixels for whoever gets right/wrong
+
+        //this part moves the tug of war display five pixels towards player who got it right
         if (who == "Player 1") {
             for (int i = 0; i < 5; i++) {
                 (*currentPosX)--;
@@ -466,15 +596,23 @@ void moveTOW(string who, int correct, int *currentPosX, int *currentPosY) {
         }
     }
     else {
+        //sets background to red
         LCD.SetBackgroundColor(RED);
         LCD.Clear();
 
+        //displays tug of war characters
         tugOfWarDisplay(currentPosX, currentPosY);
 
-        LCD.WriteAt(who, 110, 90);
+        //states who answered and that they were wrong
+        LCD.WriteAt(who, 110, 100);
         LCD.WriteAt("Answered Incorrectly!", 43, 130);
-        Sleep(1.5);
-        //this part moves the tug of war display as many pixels as needed. We will move five pixels for whoever gets right/wrong
+        //draws an arrow pointing to tug of war character display (to tell them that it is changing)
+        LCD.WriteAt("^", 153, 59);
+        LCD.WriteAt("|", 153, 59);
+        LCD.WriteAt("|", 153, 69);
+        Sleep(1.0);
+
+        //this part moves the tug of war display five pixels towards player who got it wrong
         if (who == "Player 1") {
             for (int i = 0; i < 5; i++) {
                 (*currentPosX)++;
@@ -492,29 +630,47 @@ void moveTOW(string who, int correct, int *currentPosX, int *currentPosY) {
     }
 }
 
-//this displays the tug of war characters at given coordinates
+/*
+*(Harsha created) Displays tug of war characters and outer box at the given coordinates
+*
+*   param : int *xCoor
+*       This input holds x coordinate that tug of war character display should be placed in
+*   param : int *yCoor
+*       This input holds y coordinate that tug of war character display should be placed in
+*/
 void tugOfWarDisplay(int *xCoor, int *yCoor) {
+    //creates instance of FEHImage called towBox. Represents the outer box around tug of war characters
     FEHImage towBox;
     towBox.Open("TOW Box.png");
+    //draws outer box
     towBox.Draw(0, 0);
 
+    //creates instance of FEHImage called towBox. Represents the tug of war characters
     FEHImage towChar;
     towChar.Open("TOW Characters.png");
+    //draws characters at given coordinates
     towChar.Draw(*xCoor, *yCoor);
 }
 
-//this displays question, buttons, and moves question to back of array
+/*
+*(Clayton created) Displays question and answer options, buttons to select an answer. Moves 
+*question to back of array once displayed
+*
+*   param : class Questions *questionBank
+*       This input holds the address to the question bank being used (premade based on theme selected by user)
+*/
 void displayQues(class Questions *questionBank){
+    //creates instance of Text header file to write smaller font 
     class Text smallFont;
 
-    //get question and answers
+    //gets question and answers of first question in questionBank
     string ques = (*questionBank).question;
     string ans1 = (*questionBank).a1;
     string ans2 = (*questionBank).a2;
     string ans3 = (*questionBank).a3;
     string ans4 = (*questionBank).a4;
 
-    //create strings for each part of ques/ans
+    //create strings for each part of ques/ans (needed to display the question in lines / proper format)
     string quesPart;
     string ans1Part;
     string ans2Part;
@@ -528,12 +684,14 @@ void displayQues(class Questions *questionBank){
     int ans3Length = ans3.length(); 
     int ans4Length = ans4.length(); 
 
+    //creates / variables to set width / height for each part of questions and answers
     int i = 0;
     int k = 70;
     int j;
     int d;
 
-    //allows multiple lines to be displayed from one string
+    //each while loop below allows multiple lines to be displayed from one string
+    //this is for question
     while (quesLength > 0){
 
         //add background box so text pops
@@ -554,6 +712,7 @@ void displayQues(class Questions *questionBank){
     k = 100;
     j = 1;
 
+    //this is for answer 1
     while (ans1Length > 0){
         //add background box so text pops
         LCD.SetFontColor(BLACK);
@@ -593,6 +752,7 @@ void displayQues(class Questions *questionBank){
     k = 130;
     j = 1;
 
+    //this is for answer 2
     while (ans2Length > 0){
         //add background box so text pops
         LCD.SetFontColor(BLACK);
@@ -631,6 +791,7 @@ void displayQues(class Questions *questionBank){
     k = 160;
     j = 1;
 
+    //this is for answer 3
      while (ans3Length > 0){
         //add background box so text pops
         LCD.SetFontColor(BLACK);
@@ -669,6 +830,7 @@ void displayQues(class Questions *questionBank){
     k = 190;
     j = 1;
 
+    //this is for answer 4
     while (ans4Length > 0){
         //add background box so text pops
         LCD.SetFontColor(BLACK);
@@ -709,7 +871,7 @@ void displayQues(class Questions *questionBank){
     buttons.Draw(0, 0);
 
 
-    //move question to back of array
+    //moves question to back of array
     class Questions temp;
     temp = questionBank[0];
     questionBank[0] = questionBank[1];
@@ -720,23 +882,53 @@ void displayQues(class Questions *questionBank){
     questionBank[5] = temp;
 }
 
-//this checks and records for when user hits a button, sends it to doStatsStuff, then calls moveTOW to move tug of war display correctly
+/*
+*(Harsha created) Checks and records the user selected option, who answered first, and time they took to answer. 
+* Sends the selected option to doStatsStuff. Calls moveTOW to move tug of war display accordingly
+*
+*   param : class Stats *Player1
+*       This input holds the address of the Player1 object (needed for doStatsStuff method)
+*   param : class Stats *Player2
+*       This input holds the address of the Player2 object (needed for doStatsStuff method)
+*   param : int correctNum
+*       This input holds number / index of the correct option out of all four choices
+*   param : int *currentPosX
+*       This input holds the address of current X position of the tug of war character display (needed for moveTOW method)
+*   param : int *currentPosY
+*       This input holds the address of current Y position of the tug of war character display (needed for moveTOW method)
+*/
 void analyzeAns(class Stats *Player1, class Stats *Player2, int correctNum, int *currentPosX, int *currentPosY){
+    //variables for touch
     int x, y;
+
+    //creates instance of Text header file to write smaller font 
     class Text smallFont;
+
+    //creates variables to store and find time it too to answer the question
     float timeAns, time;
+
     //option the user selected
     int option;
+
     //this will record if the option user put is correct/wrong with 1/0;
     int correct;
+
     //records who answered first
     string who;
-    //allow for click to finish registering, has stroke otherwise
+
+    //allow for click to finish registering, program has issues otherwise
     Sleep(0.1);
+    
+    //begins recording time
     timeAns = TimeNow();
-    //check for touch
+
+    //wait for user to select a button
     while(!LCD.Touch(&x,&y)){}
+
+    //once there is a touch, stops time
     time = TimeNow() - timeAns;
+
+    //sets who to which player and option to the option they selected based on location of user touch
     if (x >= 0 && x <= 40){
         //Player 1 button 1
         who = "Player 1";
@@ -752,6 +944,7 @@ void analyzeAns(class Stats *Player1, class Stats *Player2, int correctNum, int 
         else if (y >= 181 && y <= 220) {
             option = 3;
         }
+        //sends details to doStatsStuff
         correct = doStatsStuff(Player1, Player2, 1, time, correctNum, option, correct);
     } else if (x >= 279 && x <= 319) { 
         //player 2 buttons
@@ -768,19 +961,41 @@ void analyzeAns(class Stats *Player1, class Stats *Player2, int correctNum, int 
         else if (y >= 181 && y <= 220) {
             option = 3;
         }
+        //sends details to doStatsStuff
         correct = doStatsStuff(Player1, Player2, 2, time, correctNum, option, correct);
     } else {
         //if not touching button call this function again so misclicks can happen
         analyzeAns(Player1, Player2, correctNum, currentPosX, currentPosY);
     }
-    LCD.WriteAt(who, 50, 90);
     //calls moveTOW to move tug of war display correctly
     moveTOW(who, correct, currentPosX, currentPosY);
 }
 
-//this checks if the option was correct/wrong, and updates stats, returns whether or not it was correct
+/*
+*(Clayton created) Checks if user selected option was correct or wrong. Updates the player's (who answered first) stats.
+* Returns if answer was correct / wrong as an integer
+*
+*   param : class Stats *Player1
+*       This input holds the address of the Player1 object (needed for doStatsStuff method)
+*   param : class Stats *Player2
+*       This input holds the address of the Player2 object (needed for doStatsStuff method)
+*   param : int player
+*       This input holds value of which player answered first (1 for Player 1, 2 for Player 2) (sent from analyzeAns)
+*   param : float time
+*       This input holds the time it took for first player to answer (sent from analyzeAns)
+*   param : int correctNum
+*       This input holds number / index of the correct option out of all four choices (sent from analyzeAns)
+*   param : int option
+*       This input holds the option the user selected (sent from analyzeAns)
+*   param : int correct
+*       This input holds value of whether or not the user answered correct / wrong (this will be updated in this method)
+*       (sent from analyzeAns)
+*/
 int doStatsStuff(class Stats *Player1, class Stats *Player2, int player, float time, int correctNum, int option, int correct){
+    //variables to calculate average time to answer
     float temp, timeAvg, howMuch;
+    
+    //updates stats for player 1 or player 2
     if (player == 1){
         //check wether correct or not
         if(correctNum == option){
@@ -816,16 +1031,35 @@ int doStatsStuff(class Stats *Player1, class Stats *Player2, int player, float t
         Player2->avgTime = timeAvg;
         Player2->totTime += time;
     }
+    //returns whether or not the player that answered first answered correctly (1 for correct, 0 for wrong)
     return correct;
 }
 
+/*
+*(Harsha created) Sets up the celebration menu once one of the players win the game. Allows user to go back to 
+*main menu page to replay the game or do other activities (such as view instructions, credits, or stats)
+*
+*   param : int *currentPosX
+*       This input holds the address of current X position of the tug of war character display
+*   param : int *currentPosY
+*       This input holds the address of current Y position of the tug of war character display
+*   param : class Stats *Player1
+*       This input holds the address of the Player1 object (needed for mainMenu method)
+*   param : class Stats *Player2
+*       This input holds the address of the Player2 object (needed for mainMenu method)
+*/
 void celebrateMenu(int *currentPosX, int *currentPosY, class Stats *Player1, class Stats *Player2) {
+    //variables for touch
     int x, y;
+
+    //sets background for celebration menu
     LCD.Clear();
     FEHImage starBack;
     starBack.Open("Star Background.png");
     starBack.Draw(0, 0);
 
+    //displays tug of war characters and outer box near center of screen (doesn't call tugOfWarDisplay method since the 
+    //outer box won't be drawn at (0, 0))
     FEHImage towBox;
     towBox.Open("TOW Box.png");
     towBox.Draw(0, 60);
@@ -834,6 +1068,7 @@ void celebrateMenu(int *currentPosX, int *currentPosY, class Stats *Player1, cla
     towChar.Open("TOW Characters.png");
     towChar.Draw(*currentPosX, (*currentPosY) + 60);
 
+    //displays which player won. Sets up process to make the message blink (for effects)
     for (int i = 0; i < 4; i++) {
         LCD.SetFontColor(WHITE);
 
@@ -852,26 +1087,76 @@ void celebrateMenu(int *currentPosX, int *currentPosY, class Stats *Player1, cla
         Sleep(0.4);
     }
 
+    //makes sure message appears after blinking of message is done
     LCD.SetFontColor(WHITE);
     if ((*currentPosX) == 30) {
-            LCD.WriteAt("Player 2 Won!", 86, 140);
-        }
-        else {
-            LCD.WriteAt("Player 1 Won!", 86, 140);
-        }
+        LCD.WriteAt("Player 2 Won!", 86, 140);
+    }
+    else {
+        LCD.WriteAt("Player 1 Won!", 86, 140);
+    }
 
+    //set up button options for user (Menu)
     LCD.SetFontColor(WHITE);
     LCD.DrawRectangle(115, 190, 90, 25);
     LCD.WriteAt("Menu", 135, 195);
 
+    //wait for user to select a button
     while(!LCD.Touch(&x,&y)){}
 
+    //takes user touch input and sends them to respective menu
     if (x >= 115 && x <= 205 && y >= 190 && y <= 215) {
         //back to main menu
         mainMenu(Player1, Player2);
     }
     else {
+        //this calls function again to ensure player can misclick and not break game
         celebrateMenu(currentPosX, currentPosY, Player1, Player2);
     }
+}
 
+/*
+*(Harsha created) Sets up the countdown menu page that will be played before every question. 
+*
+*   param : int *currentPosX
+*       This input holds the address of current X position of the tug of war character display
+*   param : int *currentPosY
+*       This input holds the address of current Y position of the tug of war character display
+*   param : FEHImage feh
+*       This input holds object that contains background for feh theme (needed for theme method)
+*   param : FEHImage geo
+*       This input holds object that contains background for geography theme (needed for theme method)
+*   param : FEHImage osu
+*       This input holds object that contains background for osu theme (needed for theme method)
+*/
+void countdownMenu(int *currentPosX, int *currentPosY, FEHImage feh, FEHImage geo, FEHImage osu) {
+    //sets up countdown menu. Makes the menu change color / alternate between certain color patter (for effect)
+    for (int i = 3; i > 0; i--) {
+        //sets background and font if countdown is currently at 3 or 1
+        if (i % 2 != 0) {
+            LCD.SetBackgroundColor(LIGHTGOLDENRODYELLOW);
+            LCD.Clear();
+            tugOfWarDisplay(currentPosX, currentPosY); 
+            LCD.SetFontColor(OLIVE);
+            LCD.WriteAt(i, 154, 110);
+            Sleep(0.7);
+            LCD.SetFontColor(LIGHTGOLDENRODYELLOW);
+            LCD.FillRectangle(150, 105, 20, 20);
+        }
+        //sets background and font if countdown is currently at 2
+        else {
+            LCD.SetBackgroundColor(OLIVE);
+            LCD.Clear();
+            tugOfWarDisplay(currentPosX, currentPosY); 
+            LCD.SetFontColor(LIGHTGOLDENRODYELLOW);
+            LCD.WriteAt(i, 154, 110);
+            Sleep(0.7);
+            LCD.SetFontColor(OLIVE);
+            LCD.FillRectangle(150, 105, 20, 20);
+        }
+    }
+
+    //displays theme background and tug of war display after countdown
+    theme(feh, geo, osu);
+    tugOfWarDisplay(currentPosX, currentPosY);
 }
