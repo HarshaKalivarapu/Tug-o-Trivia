@@ -489,10 +489,10 @@ void statsMenu(class Stats *Player1, class Stats *Player2){
 
     //lists player 1's stats
     LCD.WriteAt("Player 1:", 0, 50);
-    smallFont.display("Correct Answers:", 0xffffff, 2, 73);
+    smallFont.display("Correct Answer:", 0xffffff, 2, 73);
     LCD.WriteAt(Player1->cAnswers, 93, 70);
 
-    smallFont.display("Incorrect Answers:", 0xffffff, 1, 93);
+    smallFont.display("Incorect Answer:", 0xffffff, 1, 93);
     LCD.WriteAt(Player1->wAnswers, 93, 90);
 
     smallFont.display("Average Time:", 0xffffff, 2, 113);
