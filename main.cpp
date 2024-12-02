@@ -72,7 +72,7 @@ int main() {
     LCD.Clear();
 
     //initializes questionBank array. Will hold the questions that relate to theme selected by user
-    Questions questionBank[6];
+    Questions questionBank[8];
 
     /*creates instance of Stats class called Player1. Represents stats for Player 1
     *   
@@ -144,7 +144,9 @@ int main() {
     class Questions fehQ4("What is the most asked question in Hitchcock 216 at 12:40pm?", "What are we learning today?", "What is for breakfast?", "When is the APP due?", "How much progress have you made on your mulch pile?", 1);
     class Questions fehQ5("What is a pointer in C?", "The address of another variable", "A variable that has as it value the address of another variable", "A variable that has its address as its value", "* and &", 1);
     class Questions fehQ6("What is the name of the simulator used in FEH?", "Proteus", "Prometheus", "Apollo", "Chronos", 0);
-    Questions fehQuestions[6] = {fehQ1, fehQ2, fehQ3, fehQ4, fehQ5, fehQ6};
+    class Questions fehQ7("How many labs are there?", "9", "5", "12", "11", 3);
+    class Questions fehQ8("How many times did we have guest speakers this year in FEH?", "0", "3", "2", "5", 2);
+    Questions fehQuestions[8] = {fehQ1, fehQ2, fehQ3, fehQ4, fehQ5, fehQ6, fehQ7, fehQ8};
 
     //Questions for Geograph Theme. Questions are stored in geoQuestions array of Questions type
     class Questions geoQ1("What is the only country that starts with an O?", "Oman", "Omaha", "Okayama", "Oslo", 0);
@@ -153,7 +155,9 @@ int main() {
     class Questions geoQ4("What is the perimeter of the Vatican?", "1 mile", "3.2 kilometers", "4.6 miles", "15.3 kilometers", 1);
     class Questions geoQ5("What is the largest desert?", "Sahara desert", "Arabian desert", "Gobi desert", "Antarctic desert", 3);
     class Questions geoQ6("What do you call a piece of land that is surrounded by water on two sides?", "Peninsula", "Isthmus", "Cape", "Cove", 2);
-    Questions geoQuestions[6] = {geoQ1, geoQ2, geoQ3, geoQ4, geoQ5, geoQ6};
+    class Questions geoQ7("What of the following countries has a non-rectangular flag?", "Switzerland", "Chad", "Sudan", "Norway", 0);
+    class Questions geoQ8("What is the capital of Australia?", "Brisbaine", "Sydney", "Canberra", "Melbourne", 2);
+    Questions geoQuestions[8] = {geoQ1, geoQ2, geoQ3, geoQ4, geoQ5, geoQ6, geoQ7, geoQ8};
 
     //Questions for OSU Theme. Questions are stored in osuQuestions array of Questions type
     class Questions osuQ1("What year was OSU founded?", "1864", "1892", "1902", "1870", 3);
@@ -162,7 +166,9 @@ int main() {
     class Questions osuQ4("What is the nickname for the Ohio State football stadium?", "The Big House", "The Horseshoe", "The Woodshed", "The Flats", 1);
     class Questions osuQ5("What is the name of the OSU student-run newspaper?", "The Lantern", "The Chronicle", "Perspective", "Prospective", 0);
     class Questions osuQ6("What is the building that has a garden on top?", "Hitckcock Hall", "Orton Hall", "Knowlton Hall", "Hamilton Hall", 2);
-    Questions osuQuestions[6] = {osuQ1, osuQ2, osuQ3, osuQ4, osuQ5, osuQ6};
+    class Questions osuQ7("How many years are you required to live on campus?", "None", "2 years", "1.5 years", "1 year", 1);
+    class Questions osuQ8("Which of the following is not a Traditions Dining Hall?", "Scott", "Morrill", "Kennedy", "Lincoln", 3);
+    Questions osuQuestions[8] = {osuQ1, osuQ2, osuQ3, osuQ4, osuQ5, osuQ6, osuQ7, osuQ8};
     
 
     //calls mainMenu method to begin the game
@@ -186,15 +192,15 @@ int main() {
         //after user selects theme choice (occurs when mainMenu method was called), questionBank is 
         //given the questions for that theme
         if (choice == 0){
-            for (int i = 0; i < 6; i++){
+            for (int i = 0; i < 8; i++){
                 questionBank[i] = fehQuestions[i];
             }
         } else if (choice == 1){
-            for (int i = 0; i < 6; i++){
+            for (int i = 0; i < 8; i++){
                 questionBank[i] = geoQuestions[i];
             }
         } else if (choice == 2){
-            for (int i = 0; i < 6; i++){
+            for (int i = 0; i < 8; i++){
                 questionBank[i] = osuQuestions[i];
             }
         }
@@ -883,7 +889,9 @@ void displayQues(class Questions *questionBank){
     questionBank[2] = questionBank[3];
     questionBank[3] = questionBank[4];
     questionBank[4] = questionBank[5];
-    questionBank[5] = temp;
+    questionBank[5] = questionBank[6];
+    questionBank[6] = questionBank[7];
+    questionBank[7] = temp;
 }
 
 /*
