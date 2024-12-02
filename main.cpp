@@ -492,7 +492,7 @@ void statsMenu(class Stats *Player1, class Stats *Player2){
     smallFont.display("Correct Answer:", 0xffffff, 2, 73);
     LCD.WriteAt(Player1->cAnswers, 93, 70);
 
-    smallFont.display("Incorect Answer:", 0xffffff, 1, 93);
+    smallFont.display("Incorrect Answer:", 0xffffff, 1, 93);
     LCD.WriteAt(Player1->wAnswers, 93, 90);
 
     smallFont.display("Average Time:", 0xffffff, 2, 113);
@@ -503,7 +503,7 @@ void statsMenu(class Stats *Player1, class Stats *Player2){
     smallFont.display("Correct Answer:", 0xffffff, 168, 73);
     LCD.WriteAt(Player2->cAnswers, 259, 70);
 
-    smallFont.display("Incorect Answer:", 0xffffff, 167, 93);
+    smallFont.display("Incorrect Answer:", 0xffffff, 167, 93);
     LCD.WriteAt(Player2->wAnswers, 259, 90);
 
     smallFont.display("Average Time:", 0xffffff, 168, 113);
