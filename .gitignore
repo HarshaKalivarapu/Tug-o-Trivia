@@ -41,3 +41,6 @@ simulator_libraries/
 
 # Project specific
 game
+
+# Release staging (local-only; published via GitHub Releases)
+release/
