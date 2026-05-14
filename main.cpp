@@ -176,11 +176,11 @@ int main() {
 
     //creates and opens backgrounds for all three themes
     FEHImage feh;
-    feh.Open("FEH - SDP FEH Theme.png");
+    feh.Open("assets/theme_feh.png");
     FEHImage geo;
-    geo.Open("FEH - SDP Geo Theme.png");
+    geo.Open("assets/theme_geo.png");
     FEHImage osu;
-    osu.Open("FEH - SDP OSU Theme.png");
+    osu.Open("assets/theme_osu.png");
     
     
     //rest of the game occurs here
@@ -247,7 +247,7 @@ void mainMenu(class Stats *Player1, class Stats *Player2){
 
     //displays the game's general background
     FEHImage back;
-    back.Open("FEH - SDP Background Image (1).png");
+    back.Open("assets/background.png");
     back.Draw(0, 0);
     back.Close();
 
@@ -314,7 +314,7 @@ void themeMenu(class Stats *Player1, class Stats *Player2){
 
     //displays the game's general background
     FEHImage back;
-    back.Open("FEH - SDP Background Image (1).png");
+    back.Open("assets/background.png");
     back.Draw(0, 0);
     back.Close();
 
@@ -651,13 +651,13 @@ void moveTOW(string who, int correct, int *currentPosX, int *currentPosY) {
 void tugOfWarDisplay(int *xCoor, int *yCoor) {
     //creates instance of FEHImage called towBox. Represents the outer box around tug of war characters
     FEHImage towBox;
-    towBox.Open("TOW Box.png");
+    towBox.Open("assets/tow_box.png");
     //draws outer box
     towBox.Draw(0, 0);
 
     //creates instance of FEHImage called towBox. Represents the tug of war characters
     FEHImage towChar;
-    towChar.Open("TOW Characters.png");
+    towChar.Open("assets/tow_characters.png");
     //draws characters at given coordinates
     towChar.Draw(*xCoor, *yCoor);
 }
@@ -732,7 +732,7 @@ void displayQues(class Questions *questionBank){
         //rest of line are normal
         if (j == 1){
             FEHImage circle;
-            circle.Open("FEH - circle.png");
+            circle.Open("assets/circle.png");
             circle.Draw(55,k);
             circle.Close();
             d = 7;
@@ -772,7 +772,7 @@ void displayQues(class Questions *questionBank){
         //rest of line are normal
         if (j == 1){
             FEHImage square;
-            square.Open("FEH - square.png");
+            square.Open("assets/square.png");
             square.Draw(55,k);
             square.Close();
             d = 7;
@@ -811,7 +811,7 @@ void displayQues(class Questions *questionBank){
         //rest of line are normal
         if (j == 1){
             FEHImage triangle;
-            triangle.Open("FEH - triangle.png");
+            triangle.Open("assets/triangle.png");
             triangle.Draw(55,k);
             triangle.Close();
             d = 7;
@@ -850,7 +850,7 @@ void displayQues(class Questions *questionBank){
         //rest of line are normal
         if (j == 1){
             FEHImage diamond;
-            diamond.Open("FEH - diamond.png");
+            diamond.Open("assets/diamond.png");
             diamond.Draw(55,k);
             diamond.Close();
             d = 7;
@@ -877,7 +877,7 @@ void displayQues(class Questions *questionBank){
 
     //display answer buttons
     FEHImage buttons;
-    buttons.Open("Buttons Display.png");
+    buttons.Open("assets/buttons_display.png");
     buttons.Draw(0, 0);
 
 
@@ -1067,17 +1067,17 @@ void celebrateMenu(int *currentPosX, int *currentPosY, class Stats *Player1, cla
     //sets background for celebration menu
     LCD.Clear();
     FEHImage starBack;
-    starBack.Open("Star Background.png");
+    starBack.Open("assets/star_background.png");
     starBack.Draw(0, 0);
 
     //displays tug of war characters and outer box near center of screen (doesn't call tugOfWarDisplay method since the 
     //outer box won't be drawn at (0, 0))
     FEHImage towBox;
-    towBox.Open("TOW Box.png");
+    towBox.Open("assets/tow_box.png");
     towBox.Draw(0, 60);
 
     FEHImage towChar;
-    towChar.Open("TOW Characters.png");
+    towChar.Open("assets/tow_characters.png");
     towChar.Draw(*currentPosX, (*currentPosY) + 60);
 
     //displays which player won. Sets up process to make the message blink (for effects)
